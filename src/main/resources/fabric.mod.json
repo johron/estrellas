@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "estrellas",
+	"version": "${version}",
+	"name": "Estrellas",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Johan Rong"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/estrellas/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"me.johron.Estrellas"
+		],
+		"fabric-datagen": [
+			"me.johron.EstrellasDataGenerator"
+		]
+	},
+	"mixins": [
+		"estrellas.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.13",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
