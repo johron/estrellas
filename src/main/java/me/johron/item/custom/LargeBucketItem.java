@@ -1,5 +1,7 @@
 package me.johron.item.custom;
 
+import me.johron.Estrellas;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.block.BlockState;
@@ -8,9 +10,11 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
@@ -29,7 +33,11 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class LargeBucketItem extends Item {
-    public static final long CAPACITY = FluidConstants.BUCKET * 4;
+
+    // Store capacity in millibuckets (mB)
+    public static final long CAPACITY_MB = FluidConstants.BUCKET * 4 * 1000 / FluidConstants.BUCKET; // 4000 mB
+
+    public static final long ONE_BUCKET_MB = 1000;
 
     public LargeBucketItem(Settings settings) {
         super(settings);
@@ -38,11 +46,11 @@ public class LargeBucketItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
         FluidVariant fluid = getFluid(stack);
-        long amount = getAmount(stack);
+        long amountMB = getAmount(stack);
         if (!fluid.isBlank()) {
-            tooltip.add(Text.literal(String.format("%s: %.2f buckets",
-                Registries.FLUID.getId(fluid.getFluid()),
-                (double) amount / FluidConstants.BUCKET)));
+            tooltip.add(Text.literal(String.format("%s: %d mB",
+                    Registries.FLUID.getId(fluid.getFluid()),
+                    amountMB)));
         } else {
             tooltip.add(Text.literal("Empty"));
         }
@@ -56,10 +64,10 @@ public class LargeBucketItem extends Item {
         return stack.getOrCreateNbt().getLong("Amount");
     }
 
-    public static void setFluid(ItemStack stack, FluidVariant fluid, long amount) {
+    public static void setFluid(ItemStack stack, FluidVariant fluid, long amountMB) {
         NbtCompound nbt = stack.getOrCreateNbt();
         nbt.put("Fluid", fluid.toNbt());
-        nbt.putLong("Amount", amount);
+        nbt.putLong("Amount", amountMB);
     }
 
     @Override
@@ -67,23 +75,27 @@ public class LargeBucketItem extends Item {
         ItemStack stack = player.getStackInHand(hand);
         BlockHitResult hitResult = raycast(world, player, RaycastContext.FluidHandling.SOURCE_ONLY);
 
+        if (transferToBucket(stack, player)) {
+            world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.PLAYERS, 0.5F, 1.0F);
+            world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_BUCKET_FILL, SoundCategory.PLAYERS, 1.0F, 1.0F);
+            return TypedActionResult.success(stack);
+        }
+
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockPos pos = hitResult.getBlockPos();
-            BlockState state = world.getBlockState(pos);
             FluidState fluidState = world.getFluidState(pos);
+            Fluid fluid = fluidState.getFluid();
+            FluidVariant currentFluid = getFluid(stack);
 
-            if (!fluidState.isEmpty()) {
-                Fluid fluid = fluidState.getFluid();
-                long currentAmount = getAmount(stack);
-                FluidVariant currentFluid = getFluid(stack);
+            if (!fluidState.isEmpty() && (currentFluid.isBlank() || currentFluid.getFluid() == fluid)
+                    && getAmount(stack) + ONE_BUCKET_MB <= CAPACITY_MB) {
+                world.setBlockState(pos, Blocks.AIR.getDefaultState());
+                world.playSound(player, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 0.7F);
 
-                if (currentAmount < CAPACITY && (currentFluid.isBlank() || currentFluid.getFluid() == fluid)) {
-                    world.setBlockState(pos, Blocks.AIR.getDefaultState());
-                    world.playSound(player, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                FluidVariant newFluid = FluidVariant.of(fluid);
+                setFluid(stack, newFluid, getAmount(stack) + ONE_BUCKET_MB);
 
-                    setFluid(stack, FluidVariant.of(fluid), currentAmount + FluidConstants.BUCKET);
-                    return TypedActionResult.success(stack, world.isClient());
-                }
+                return TypedActionResult.success(stack);
             }
         }
 
@@ -95,29 +107,52 @@ public class LargeBucketItem extends Item {
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
         Direction direction = context.getSide();
-        BlockPos targetPos = pos.offset(direction);
         ItemStack stack = context.getStack();
-        PlayerEntity player = context.getPlayer();
+        FluidVariant fluid = getFluid(stack);
+        long amountMB = getAmount(stack);
 
-        if (player != null && !world.isClient()) {
-            long currentAmount = getAmount(stack);
-            FluidVariant fluid = getFluid(stack);
-            if (currentAmount >= FluidConstants.BUCKET && !fluid.isBlank()) {
-                BlockState targetState = world.getBlockState(targetPos);
-                if (targetState.isAir()) {
-                    world.setBlockState(targetPos, fluid.getFluid().getDefaultState().getBlockState());
-                    world.playSound(null, targetPos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        if (!fluid.isBlank() && amountMB >= ONE_BUCKET_MB) {
+            BlockPos placePos = pos.offset(direction);
+            BlockState state = world.getBlockState(placePos);
 
-                    if (currentAmount - FluidConstants.BUCKET <= 0) {
-                        setFluid(stack, FluidVariant.blank(), 0);
-                    } else {
-                        setFluid(stack, fluid, currentAmount - FluidConstants.BUCKET);
-                    }
-                    return ActionResult.SUCCESS;
-                }
+            if (state.isAir() || state.isReplaceable()) {
+                Fluid fluidInstance = fluid.getFluid();
+                FluidState fluidState = fluidInstance.getDefaultState();
+
+                world.setBlockState(placePos, fluidState.getBlockState());
+                world.playSound(context.getPlayer(), placePos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 0.7F);
+
+                long remainingAmount = amountMB - ONE_BUCKET_MB;
+                setFluid(stack, remainingAmount > 0 ? fluid : FluidVariant.blank(), remainingAmount);
+
+                return ActionResult.SUCCESS;
             }
         }
 
         return ActionResult.PASS;
+    }
+
+    public static boolean transferToBucket(ItemStack largeBucketStack, PlayerEntity player) {
+        FluidVariant fluid = getFluid(largeBucketStack);
+        long amountMB = getAmount(largeBucketStack);
+
+        // Check if the large bucket has at least 1000 mB
+        if (!fluid.isBlank() && amountMB >= ONE_BUCKET_MB) {
+            // Check the main hand and offhand for an empty bucket
+            for (Hand hand : Hand.values()) {
+                ItemStack stack = player.getStackInHand(hand);
+                if (stack.getItem() == Items.BUCKET) {
+                    // Replace the empty bucket with a filled bucket
+                    player.setStackInHand(hand, new ItemStack(fluid.getFluid().getBucketItem()));
+
+                    // Deduct 1000 mB from the large bucket
+                    setFluid(largeBucketStack, amountMB > ONE_BUCKET_MB ? fluid : FluidVariant.blank(), amountMB - ONE_BUCKET_MB);
+
+                    return true; // Transfer successful
+                }
+            }
+        }
+
+        return false; // Transfer failed
     }
 }

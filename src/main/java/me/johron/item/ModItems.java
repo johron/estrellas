@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 public class ModItems {
     public static final Item LARGE_BUCKET = registerItem("large_bucket",
-            new LargeBucketItem(new Item.Settings().maxCount(1)));
+            new LargeBucketItem(new FabricItemSettings()));
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, new Identifier(Estrellas.MOD_ID, name), item);

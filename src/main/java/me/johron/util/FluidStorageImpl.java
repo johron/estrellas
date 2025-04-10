@@ -22,7 +22,7 @@ public class FluidStorageImpl extends SingleVariantStorage<FluidVariant> {
 
     @Override
     protected long getCapacity(FluidVariant variant) {
-        return LargeBucketItem.CAPACITY;
+        return LargeBucketItem.CAPACITY_MB;
     }
 
     @Override
