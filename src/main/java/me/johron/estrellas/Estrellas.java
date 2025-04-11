@@ -1,9 +1,9 @@
-package me.johron;
+package me.johron.estrellas;
 
-import me.johron.block.ModBlocks;
-import me.johron.item.ModItemGroups;
-import me.johron.item.ModItems;
-import me.johron.util.FluidStorageImpl;
+import me.johron.estrellas.block.ModBlocks;
+import me.johron.estrellas.item.ModItemGroups;
+import me.johron.estrellas.item.ModItems;
+import me.johron.estrellas.util.FluidStorageImpl;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.registry.FuelRegistry;

@@ -16,10 +16,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"me.johron.Estrellas"
+          "me.johron.estrellas.Estrellas"
 		],
 		"fabric-datagen": [
-			"me.johron.EstrellasDataGenerator"
+          "me.johron.estrellas.EstrellasDataGenerator"
 		]
 	},
 	"mixins": [

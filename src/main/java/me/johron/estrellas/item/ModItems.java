@@ -1,7 +1,7 @@
-package me.johron.item;
+package me.johron.estrellas.item;
 
-import me.johron.Estrellas;
-import me.johron.item.custom.FluidBarrelItem;
+import me.johron.estrellas.Estrellas;
+import me.johron.estrellas.item.custom.FluidBarrelItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;

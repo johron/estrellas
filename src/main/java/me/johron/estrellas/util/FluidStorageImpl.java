@@ -1,6 +1,6 @@
-package me.johron.util;
+package me.johron.estrellas.util;
 
-import me.johron.item.custom.FluidBarrelItem;
+import me.johron.estrellas.item.custom.FluidBarrelItem;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.minecraft.item.ItemStack;

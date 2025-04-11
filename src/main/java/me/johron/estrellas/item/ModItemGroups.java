@@ -1,7 +1,7 @@
-package me.johron.item;
+package me.johron.estrellas.item;
 
-import me.johron.Estrellas;
-import me.johron.block.ModBlocks;
+import me.johron.estrellas.Estrellas;
+import me.johron.estrellas.block.ModBlocks;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;

@@ -1,6 +1,6 @@
-package me.johron.block;
+package me.johron.estrellas.block;
 
-import me.johron.Estrellas;
+import me.johron.estrellas.Estrellas;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -26,5 +26,6 @@ public class ModBlocks {
     }
 
     public static void registerModBlocks() {
+
     }
 }

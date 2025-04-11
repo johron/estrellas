@@ -1,4 +1,4 @@
-package me.johron.item.custom;
+package me.johron.estrellas.item.custom;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
