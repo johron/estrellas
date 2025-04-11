@@ -26,6 +26,5 @@ public class ModBlocks {
     }
 
     public static void registerModBlocks() {
-        Estrellas.LOGGER.info("Registering ModBlocks for " + Estrellas.MOD_ID);
     }
 }

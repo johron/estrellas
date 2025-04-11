@@ -3,7 +3,7 @@
 	"id": "estrellas",
 	"version": "${version}",
 	"name": "Estrellas",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Extra minecraft features meant for Ad Astra",
 	"authors": [
 		"Johan Rong"
 	],

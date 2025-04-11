@@ -18,7 +18,7 @@ public class Estrellas implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModItemGroups.registerItemGroups();
-
+		ModItems.registerModItems();
 		ModBlocks.registerModBlocks();
 
 		FluidStorage.ITEM.registerForItems((stack, context) -> new FluidStorageImpl(stack), ModItems.FLUID_BARREL);

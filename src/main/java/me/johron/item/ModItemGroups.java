@@ -20,6 +20,5 @@ public class ModItemGroups {
             }).build());
 
     public static void registerItemGroups() {
-        Estrellas.LOGGER.info("Registering ModItemGroups for " + Estrellas.MOD_ID);
     }
 }
