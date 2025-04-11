@@ -3,5 +3,7 @@
 
   "block.estrellas.charcoal_block": "Block of Charcoal",
 
-  "itemgroup.estrellas": "Estrellas"
+  "itemgroup.estrellas": "Estrellas",
+
+  "tooltip.estrellas.fluid_empty": "Empty"
 }

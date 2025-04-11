@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 public class ModItems {
     public static final Item FLUID_BARREL = registerItem("fluid_barrel",
-            new FluidBarrelItem(new FabricItemSettings()));
+            new FluidBarrelItem(new FabricItemSettings().maxCount(1)));
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, new Identifier(Estrellas.MOD_ID, name), item);

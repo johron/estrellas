@@ -18,6 +18,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -32,7 +33,7 @@ import java.util.List;
 public class FluidBarrelItem extends Item {
 
     // Store capacity in millibuckets (mB)
-    public static final long CAPACITY_MB = FluidConstants.BUCKET * 4 * 1000 / FluidConstants.BUCKET; // 4000 mB
+    public static final long CAPACITY_MB = FluidConstants.BUCKET * 6 * 1000 / FluidConstants.BUCKET; // 6000 mB
 
     public static final long ONE_BUCKET_MB = 1000;
 
@@ -45,11 +46,13 @@ public class FluidBarrelItem extends Item {
         FluidVariant fluid = getFluid(stack);
         long amountMB = getAmount(stack);
         if (!fluid.isBlank()) {
-            tooltip.add(Text.literal(String.format("%s: %d mB",
-                    Registries.FLUID.getId(fluid.getFluid()),
-                    amountMB)));
+            tooltip.add(Text.literal(String.format("%s - %d/%d \uD83E\uDEA3",
+                    Registries.FLUID.getId(
+                            fluid.getFluid()).getPath().substring(0, 1).toUpperCase() +
+                            Registries.FLUID.getId(fluid.getFluid()).getPath().substring(1),
+                    amountMB / 1000, CAPACITY_MB / 1000)).formatted(Formatting.GOLD));
         } else {
-            tooltip.add(Text.literal("Empty"));
+            tooltip.add(Text.translatable("tooltip.estrellas.fluid_empty").formatted(Formatting.GRAY));
         }
     }
 
@@ -139,8 +142,15 @@ public class FluidBarrelItem extends Item {
             for (Hand hand : Hand.values()) {
                 ItemStack stack = player.getStackInHand(hand);
                 if (stack.getItem() == Items.BUCKET) {
-                    // Replace the empty bucket with a filled bucket
-                    player.setStackInHand(hand, new ItemStack(fluid.getFluid().getBucketItem()));
+                    // Add the filled bucket to the inventory
+                    player.getInventory().insertStack(new ItemStack(fluid.getFluid().getBucketItem(), 1));
+
+                    // Keep the remaining empty buckets in the hand
+                    if (stack.getCount() > 1) {
+                        stack.decrement(1);
+                    } else {
+                        player.setStackInHand(hand, ItemStack.EMPTY);
+                    }
 
                     // Deduct 1000 mB from the fluid barrel
                     setFluid(largeBucketStack, amountMB > ONE_BUCKET_MB ? fluid : FluidVariant.blank(), amountMB - ONE_BUCKET_MB);

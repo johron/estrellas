@@ -1,17 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "pattern": [
-    "CCC",
-    "CCC",
-    "CCC"
+    "###",
+    "###",
+    "###"
   ],
   "key": {
-    "C": {
-      "tag": "minecraft:coals"
+    "#": {
+      "item": "minecraft:charcoal"
     }
   },
   "result": {
-    "item": "estrellas:charcoal_block"
+    "item": "estrellas:charcoal_block",
+    "count": 1
   }
 }
