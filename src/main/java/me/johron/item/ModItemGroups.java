@@ -14,9 +14,9 @@ public class ModItemGroups {
     public static final ItemGroup ESTRELLAS_GROUP = Registry.register(Registries.ITEM_GROUP,
             new Identifier(Estrellas.MOD_ID, "estrellas"),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.estrellas"))
-                    .icon(() -> new ItemStack(ModBlocks.CHARCOAL_BLOCK)).entries((displayContext, entries) -> {
+                    .icon(() -> new ItemStack(ModItems.FLUID_BARREL)).entries((displayContext, entries) -> {
                         entries.add(ModBlocks.CHARCOAL_BLOCK);
-                        entries.add(ModItems.LARGE_BUCKET);
+                        entries.add(ModItems.FLUID_BARREL);
             }).build());
 
     public static void registerItemGroups() {

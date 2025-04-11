@@ -1,6 +1,6 @@
 package me.johron.util;
 
-import me.johron.item.custom.LargeBucketItem;
+import me.johron.item.custom.FluidBarrelItem;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.minecraft.item.ItemStack;
@@ -11,8 +11,8 @@ public class FluidStorageImpl extends SingleVariantStorage<FluidVariant> {
     public FluidStorageImpl(ItemStack stack) {
         this.stack = stack;
 
-        this.variant = LargeBucketItem.getFluid(stack);
-        this.amount = LargeBucketItem.getAmount(stack);
+        this.variant = FluidBarrelItem.getFluid(stack);
+        this.amount = FluidBarrelItem.getAmount(stack);
     }
 
     @Override
@@ -22,11 +22,11 @@ public class FluidStorageImpl extends SingleVariantStorage<FluidVariant> {
 
     @Override
     protected long getCapacity(FluidVariant variant) {
-        return LargeBucketItem.CAPACITY_MB;
+        return FluidBarrelItem.CAPACITY_MB;
     }
 
     @Override
     protected void onFinalCommit() {
-        LargeBucketItem.setFluid(stack, this.variant, this.amount);
+        FluidBarrelItem.setFluid(stack, this.variant, this.amount);
     }
 }

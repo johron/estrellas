@@ -1,7 +1,5 @@
 package me.johron.item.custom;
 
-import me.johron.Estrellas;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.block.BlockState;
@@ -10,7 +8,6 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -32,14 +29,14 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class LargeBucketItem extends Item {
+public class FluidBarrelItem extends Item {
 
     // Store capacity in millibuckets (mB)
     public static final long CAPACITY_MB = FluidConstants.BUCKET * 4 * 1000 / FluidConstants.BUCKET; // 4000 mB
 
     public static final long ONE_BUCKET_MB = 1000;
 
-    public LargeBucketItem(Settings settings) {
+    public FluidBarrelItem(Settings settings) {
         super(settings);
     }
 
@@ -136,7 +133,7 @@ public class LargeBucketItem extends Item {
         FluidVariant fluid = getFluid(largeBucketStack);
         long amountMB = getAmount(largeBucketStack);
 
-        // Check if the large bucket has at least 1000 mB
+        // Check if the fluid barrel has at least 1000 mB
         if (!fluid.isBlank() && amountMB >= ONE_BUCKET_MB) {
             // Check the main hand and offhand for an empty bucket
             for (Hand hand : Hand.values()) {
@@ -145,7 +142,7 @@ public class LargeBucketItem extends Item {
                     // Replace the empty bucket with a filled bucket
                     player.setStackInHand(hand, new ItemStack(fluid.getFluid().getBucketItem()));
 
-                    // Deduct 1000 mB from the large bucket
+                    // Deduct 1000 mB from the fluid barrel
                     setFluid(largeBucketStack, amountMB > ONE_BUCKET_MB ? fluid : FluidVariant.blank(), amountMB - ONE_BUCKET_MB);
 
                     return true; // Transfer successful
